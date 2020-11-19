@@ -88,6 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->priority_level = 10;
 
   release(&ptable.lock);
 
@@ -199,6 +200,7 @@ fork(void)
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
+  np->priority_level = curproc->priority_level;
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -225,7 +227,7 @@ fork(void)
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.
 void
-exit(int status)
+exit(void)
 {
   struct proc *curproc = myproc();
   struct proc *p;
@@ -286,6 +288,7 @@ wait(int* status)
       havekids = 1;
       if(p->state == ZOMBIE){
         // Found one.
+        *status = p->status;
         pid = p->pid;
         kfree(p->kstack);
         p->kstack = 0;
@@ -325,7 +328,7 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
-  
+ int min = 31; 
   for(;;){
     // Enable interrupts on this processor.
     sti();
@@ -333,8 +336,22 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
+      if(p->state != RUNNABLE){
+	if(p->state == SLEEPING){
+		--p->priority_level;
+	}
+	}
         continue;
+      if (p->priority_level < min){	
+        min = p->priority_level;	
+      }	
+    }
+
+for (p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if (p->state != RUNNABLE || min  != p->priority_level){
+
+        continue;	
+      }
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -533,13 +550,55 @@ procdump(void)
   }
 }
 
+void exitStatus(int status)
+{
+  struct proc *curproc = myproc();
+  struct proc *p;
+  int fd;
+  
+ 
+
+  curproc->status = status;
+
+  if(curproc == initproc)
+    panic("init exiting");
+
+for(fd = 0; fd < NOFILE; fd++){
+    if(curproc->ofile[fd]){
+      fileclose(curproc->ofile[fd]);
+      curproc->ofile[fd] = 0;
+    }
+  }
+
+  begin_op();
+  iput(curproc->cwd);
+  end_op();
+  curproc->cwd = 0;
+
+  acquire(&ptable.lock);
+
+wakeup1(curproc->parent);
+
+ for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->parent == curproc){
+      p->parent = initproc;
+      if(p->state == ZOMBIE)
+        wakeup1(initproc);
+    }
+  }
+
+ curproc->state = ZOMBIE;
+  sched();
+  panic("zombie exit");
+} 
 
 
-int
-waitpid(int processID ,int* status, int options)
+
+
+int waitpid(int pid ,int* status, int options)
 {
   struct proc *p;
-  int havekids, pid;
+  int havekids;
   struct proc *curproc = myproc();
   
   acquire(&ptable.lock);
@@ -547,11 +606,11 @@ waitpid(int processID ,int* status, int options)
     
     havekids = 0;
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->pid!= processID)
+      if(p->pid!= pid)
         continue;
       havekids = 1;
       if(p->state == ZOMBIE){
-        
+      *status = p->status;  
         pid = p->pid;
         kfree(p->kstack);
         p->kstack = 0;
@@ -561,8 +620,6 @@ waitpid(int processID ,int* status, int options)
         p->name[0] = 0;
         p->killed = 0;
         p->state = UNUSED;
-        status = &p->exitStatus;
-        p->exitStatus = 0;
         release(&ptable.lock);
         return pid;
       }
@@ -575,4 +632,13 @@ waitpid(int processID ,int* status, int options)
 
     sleep(curproc, &ptable.lock);  
   }
+}
+
+
+int priority(int setPriority){
+	struct proc *curproc = myproc();
+	acquire(&ptable.lock);
+	curproc->priority_level = setPriority;
+	acquire(&ptable.lock);
+	return 0;
 }

@@ -16,17 +16,14 @@ sys_fork(void)
 int
 sys_exit(void)
 { int status;
-  if (argint(0, &status) < 0) {
-	return -1;
-  }
-  exit(status);
+  exit();
   return 0;  // not reached
 }
 
 int
 sys_wait(void)
 { int *status;
-  argptr(0, (void*)&status, sizeof(status));
+  argptr(0, (char **)&status, sizeof(int*));
   return wait(status);
 }
 
@@ -93,17 +90,33 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+int sys_exitStatus(void){
+int status;
+
+if(argint(0, &status) < 0){
+exitStatus(status);
+return 0;
+}
+
+
 int sys_waitpid(void) {
-	int pid;
+	int pid, options;
 	int* status;
 	int options;
 	if (argint(0, &pid) < 0){
 		return -1;
 	}
-	argptr(1, (void*)&status, sizeof(status));
+	argptr(1, (char**) &status, sizeof(int*));
 	
-	if (argint(2, &options) < 0){
-		return -1;
-	}
+	(argint(2, &options);
+		
+	
 	return waitpid(pid, status, options);
+}
+
+int set_priority(int priority_level){
+int priority;
+argint (0, &priority);
+return prior(priority);
 }

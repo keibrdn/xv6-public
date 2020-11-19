@@ -104,7 +104,7 @@ int             pipewrite(struct pipe*, char*, int);
 //PAGEBREAK: 16
 // proc.c
 int             cpuid(void);
-void            exit(int);
+void            exit(void);
 int             fork(void);
 int             growproc(int);
 int             kill(int);
@@ -121,7 +121,9 @@ int             wait(int*);
 int		waitpid(int, int*, int);
 void            wakeup(void*);
 void            yield(void);
-
+void		exitStatus(int);
+int		waitpid(int,int*,int);
+int		set_priority(int);
 // swtch.S
 void            swtch(struct context**, struct context*);
 
