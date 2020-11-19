@@ -14,8 +14,7 @@ sys_fork(void)
 }
 
 int
-sys_exit(void)
-{ int status;
+sys_exit(void){
   exit();
   return 0;  // not reached
 }
@@ -95,28 +94,29 @@ int sys_exitStatus(void){
 int status;
 
 if(argint(0, &status) < 0){
-exitStatus(status);
+exitStatus(status);}
 return 0;
+
+
 }
-
-
 int sys_waitpid(void) {
 	int pid, options;
 	int* status;
-	int options;
-	if (argint(0, &pid) < 0){
-		return -1;
-	}
+
+
+	argint(0, &pid);
+	
 	argptr(1, (char**) &status, sizeof(int*));
 	
-	(argint(2, &options);
+	argint(2, &options);
 		
 	
 	return waitpid(pid, status, options);
 }
 
-int set_priority(int priority_level){
-int priority;
-argint (0, &priority);
-return prior(priority);
+
+int setPrior(int priority_level){
+  int priority;
+  argint (0, &priority);
+  return prior(priority);
 }

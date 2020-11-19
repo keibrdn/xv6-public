@@ -635,7 +635,7 @@ int waitpid(int pid ,int* status, int options)
 }
 
 
-int priority(int setPriority){
+int prior(int setPriority){
 	struct proc *curproc = myproc();
 	acquire(&ptable.lock);
 	curproc->priority_level = setPriority;

@@ -37,8 +37,6 @@ enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 // Per-process state
 struct proc {
 
-int status;
-int exitStatus;
 
   uint sz;                     // Size of process memory (bytes)
   pde_t* pgdir;                // Page table
@@ -50,9 +48,11 @@ int exitStatus;
   struct context *context;     // swtch() here to run process
   void *chan;                  // If non-zero, sleeping on chan
   int killed;
+
  int status;
 int priority_level;
-int set_priority;
+int setPriority;
+
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
