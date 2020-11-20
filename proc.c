@@ -88,8 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->priority_level = 10;
-
+p->priority = 10;
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -200,7 +199,7 @@ fork(void)
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
-  np->priority_level = curproc->priority_level;
+  np->prior_lvl = curproc->prior_lvl;
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -328,31 +327,40 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
- int min = 31; 
-  for(;;){
+
+int prev_prior = 32;
+  int temp = 32;  
+
+for(;;){
     // Enable interrupts on this processor.
     sti();
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE){
-	if(p->state == SLEEPING){
-		--p->priority_level;
-	}
-	}
-        continue;
-      if (p->priority_level < min){	
-        min = p->priority_level;	
+      if(p->state != RUNNABLE)
+        
+	continue;
+
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        if(p->state != RUNNABLE)
+           continue; 
+           if (p->priority < prev_prior) {
+              prev_prior = p->priority;       
+           }
+           else {
+               temp = p->priority;      
+           }
+
       }	
     }
 
 for (p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if (p->state != RUNNABLE || min  != p->priority_level){
+      if (p->state != RUNNABLE){
 
         continue;	
       }
-
+	if (prev_prior == p->priority) { // run if priorities match
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -362,11 +370,19 @@ for (p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 
       swtch(&(c->scheduler), p->context);
       switchkvm();
-
+	for (p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if (p->state != RUNNABLE){
+        continue;
+      }
+       if(temp > prev_prior) {
+          prev_prior = temp; 
+       }
+      }
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
     }
+}
     release(&ptable.lock);
 
   }
@@ -638,7 +654,7 @@ int waitpid(int pid ,int* status, int options)
 int prior(int setPriority){
 	struct proc *curproc = myproc();
 	acquire(&ptable.lock);
-	curproc->priority_level = setPriority;
+	curproc->prior_lvl = setPriority;
 	acquire(&ptable.lock);
 	return 0;
 }

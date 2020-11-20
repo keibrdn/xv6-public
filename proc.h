@@ -55,8 +55,8 @@ struct proc {
   char name[16];               // Process name (debugging)
 
   int status;
-  int priority_level;
-  int setPriority;
+  int prior_lvl;
+  int priority;
 
 };
 

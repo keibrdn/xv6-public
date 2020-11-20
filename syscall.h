@@ -22,4 +22,4 @@
 #define SYS_close  21
 #define SYS_waitpid 22
 #define SYS_exitStatus 23
-#define SYS_setPrior 24
+#define SYS_setpriority 24

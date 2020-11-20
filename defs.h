@@ -120,11 +120,13 @@ void            userinit(void);
 int             wait(int*);
 int		waitpid(int, int*, int);
 void            wakeup(void*);
+
+
 void            yield(void);
-void		exitStatus(int);
-int		waitpid(int,int*,int);
-int		setPrior(int);
-// swtch.S
+//swtch.s
+void 		exitStatus(int);
+int 		waitpid(int,int*,int);
+int             setpriority(int);
 void            swtch(struct context**, struct context*);
 
 // spinlock.c

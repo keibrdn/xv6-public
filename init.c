@@ -24,12 +24,14 @@ main(void)
     pid = fork();
     if(pid < 0){
       printf(1, "init: fork failed\n");
-      exit(0);
+exitStatus(1);    
+  exit();
     }
     if(pid == 0){
       exec("sh", argv);
       printf(1, "init: exec sh failed\n");
-      exit(0);
+exitStatus(1);     
+ exit();
     }
     while((wpid=wait(&pid)) >= 0 && wpid != pid)
       printf(1, "zombie!\n");

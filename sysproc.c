@@ -117,9 +117,17 @@ int sys_waitpid(void) {
 	return waitpid(pid, status, options);
 }
 
+int sys_setpriority(void) {
+  int prior_lvl;
+  int prev_priority;
 
-int setPrior(int priority_level){
-  int priority;
-  argint (0, &priority);
-  return prior(priority);
-}
+  prev_priority = myproc()->priority;  //set  previous priority to process priorty 
+  argint(0, &prior_lvl);
+
+  if(prior_lvl > 31 || prior_lvl < 0) { // check out of bounds
+   return -1;
+ }
+     myproc()->priority = prior_lvl; // set new priority
+ return prev_priority; 
+ }
+
