@@ -1,5 +1,4 @@
  
-
 #include "types.h"
 #include "defs.h"
 #include "param.h"
@@ -51,7 +50,7 @@ balloc(uint dev)
     for(bi = 0; bi < BPB && b + bi < sb.size; bi++){
       m = 1 << (bi % 8);
       if((bp->data[bi/8] & m) == 0){   
-        bp->data[bi/8] |= m;  
+        bp->data[bi/8] |= m;   
         log_write(bp);
         brelse(bp);
         bzero(dev, b + bi);
@@ -63,8 +62,7 @@ balloc(uint dev)
   panic("balloc: out of blocks");
 }
 
-
-static void
+ static void
 bfree(int dev, uint b)
 {
   struct buf *bp;
@@ -104,7 +102,6 @@ iinit(int dev)
 }
 
 static struct inode* iget(uint dev, uint inum);
-
  
 struct inode*
 ialloc(uint dev, short type)
@@ -116,10 +113,10 @@ ialloc(uint dev, short type)
   for(inum = 1; inum < sb.ninodes; inum++){
     bp = bread(dev, IBLOCK(inum, sb));
     dip = (struct dinode*)bp->data + inum%IPB;
-    if(dip->type == 0){ 
+    if(dip->type == 0){   
       memset(dip, 0, sizeof(*dip));
       dip->type = type;
-      log_write(bp);   
+      log_write(bp);    
       brelse(bp);
       return iget(dev, inum);
     }
@@ -146,7 +143,6 @@ iupdate(struct inode *ip)
   log_write(bp);
   brelse(bp);
 }
-
  
 static struct inode*
 iget(uint dev, uint inum)
@@ -255,7 +251,6 @@ iunlockput(struct inode *ip)
   iunlock(ip);
   iput(ip);
 }
-
  
 static uint
 bmap(struct inode *ip, uint bn)
@@ -271,7 +266,8 @@ bmap(struct inode *ip, uint bn)
   bn -= NDIRECT;
 
   if(bn < NINDIRECT){
-     if((addr = ip->addrs[NDIRECT]) == 0)
+     
+    if((addr = ip->addrs[NDIRECT]) == 0)
       ip->addrs[NDIRECT] = addr = balloc(ip->dev);
     bp = bread(ip->dev, addr);
     a = (uint*)bp->data;
@@ -286,7 +282,7 @@ bmap(struct inode *ip, uint bn)
   panic("bmap: out of range");
 }
 
-/ 
+ 
 static void
 itrunc(struct inode *ip)
 {
@@ -412,7 +408,7 @@ dirlookup(struct inode *dp, char *name, uint *poff)
     if(de.inum == 0)
       continue;
     if(namecmp(name, de.name) == 0){
-      if(poff)
+       if(poff)
         *poff = off;
       inum = de.inum;
       return iget(dp->dev, inum);
@@ -448,8 +444,8 @@ dirlink(struct inode *dp, char *name, uint inum)
 
   return 0;
 }
-
  
+
 static char*
 skipelem(char *path, char *name)
 {
