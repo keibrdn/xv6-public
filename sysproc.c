@@ -94,7 +94,10 @@ int sys_exitStatus(void){
 int status;
 
 if(argint(0, &status) < 0){
-exitStatus(status);}
+  exitStatus(0);
+}
+
+exitStatus(status);
 return 0;
 
 

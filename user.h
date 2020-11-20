@@ -23,9 +23,9 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+int exitStatus(int);
 int waitpid(int, int*, int);
 int setPrior(int);
-int exitS(int);
 // ulib.c
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);
