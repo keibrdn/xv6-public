@@ -121,16 +121,16 @@ argint(2, &options);
 
 int
 sys_setpriority(void) {
-  int prior_lvl;
+  int priority_level;
   int prev_priority;
 
   prev_priority = myproc()->priority;
-  argint(0, &prior_lvl);
+  argint(0, &priority_level);
 
-  if(prior_lvl > 31 || prior_lvl < 0) {
+  if(priority_level > 31 || priority_level < 0) {
    return -1;
  }
-     myproc()->priority = prior_lvl; 
+     myproc()->priority = priority_level; 
  return prev_priority;
  }
 

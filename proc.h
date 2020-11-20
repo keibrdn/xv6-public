@@ -56,7 +56,7 @@ struct proc {
 
   int status;
   int priority;
-  int prior_lvl;
+  int priority_level;
 
 };
 
