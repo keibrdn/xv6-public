@@ -35,7 +35,7 @@ main(int argc, char *argv[])
   close(fd);
 
   wait(&status);
-  exitS(1);
+  exitStatus(1);
   exit();
 }
 

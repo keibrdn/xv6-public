@@ -27,7 +27,7 @@ wc(int fd, char *name)
   }
   if(n < 0){
     printf(1, "wc: read error\n");
-    exitS(1);
+    exitStatus(1);
     exit();
   }
   printf(1, "%d %d %d %s\n", l, w, c, name);
@@ -40,19 +40,19 @@ main(int argc, char *argv[])
 
   if(argc <= 1){
     wc(0, "");
-    exitS(1);
+    exitStatus(1);
     exit();
   }
 
   for(i = 1; i < argc; i++){
     if((fd = open(argv[i], 0)) < 0){
       printf(1, "wc: cannot open %s\n", argv[i]);
-      exitS(1);
+      exitStatus(1);
       exit();
     }
     wc(fd, argv[i]);
     close(fd);
   }
-  exitS(1);
+  exitStatus(1);
   exit();
 }

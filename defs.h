@@ -105,7 +105,7 @@ void            userinit(void);
 int             wait(int*);
 void            wakeup(void*);
 void            yield(void);
-void    exitS(int);
+void    exitStatus(int);
 int     waitpid(int,int*,int);
 int             setpriority(int);
  void            swtch(struct context**, struct context*);

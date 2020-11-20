@@ -502,7 +502,7 @@ procdump(void)
 
 
 void
-exitS(int status)
+exitStatus(int status)
 {
   struct proc *curproc = myproc();
   struct proc *p;

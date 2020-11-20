@@ -22,13 +22,13 @@ main(void)
     pid = fork();
     if(pid < 0){
       printf(1, "init: fork failed\n");
-      exitS(1);
+      exitStatus(1);
       exit();
     }
     if(pid == 0){
       exec("sh", argv);
       printf(1, "init: exec sh failed\n");
-      exitS(1);
+      exitStatus(1);
       exit();
     }
     while((wpid=wait(&status)) >= 0 && wpid != pid)

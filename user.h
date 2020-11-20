@@ -22,7 +22,7 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-int exitS(int);
+int exitStatus(int);
 int waitpid(int,int*,int);
 int setpriority(int);
 

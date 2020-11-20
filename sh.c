@@ -64,7 +64,7 @@ runcmd(struct cmd *cmd)
   int status;
 
   if(cmd == 0){
-    exitS(1);
+    exitStatus(1);
     exit();
   }
 
@@ -85,7 +85,7 @@ runcmd(struct cmd *cmd)
     close(rcmd->fd);
     if(open(rcmd->file, rcmd->mode) < 0){
       printf(2, "open %s failed\n", rcmd->file);
-      exitS(1);
+      exitStatus(1);
       exit();
     }
     runcmd(rcmd->cmd);
@@ -129,7 +129,7 @@ runcmd(struct cmd *cmd)
       runcmd(bcmd->cmd);
     break;
   }
-  exitS(1);
+  exitStatus(1);
   exit();
 }
 
@@ -171,7 +171,7 @@ main(void)
       runcmd(parsecmd(buf));
     wait(&status);
   }
-  exitS(1);
+  exitStatus(1);
   exit();
 }
 
@@ -179,7 +179,7 @@ void
 panic(char *s)
 {
   printf(2, "%s\n", s);
-  exitS(1);
+  exitStatus(1);
   exit();
 }
 

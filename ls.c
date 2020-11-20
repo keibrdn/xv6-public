@@ -75,11 +75,11 @@ main(int argc, char *argv[])
 
   if(argc < 2){
     ls(".");
-    exitS(1);
+    exitStatus(1);
     exit();
   }
   for(i=1; i<argc; i++)
     ls(argv[i]);
-  exitS(1);
+  exitStatus(1);
   exit();
 }

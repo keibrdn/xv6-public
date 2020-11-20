@@ -9,7 +9,7 @@ main(int argc, char *argv[])
 
   if(argc < 2){
     printf(2, "Usage: mkdir files...\n");
-    exitS(1);
+    exitStatus(1);
     exit();
   }
 
@@ -19,6 +19,6 @@ main(int argc, char *argv[])
       break;
     }
   }
-  exitS(1);
+  exitStatus(1);
   exit();
 }

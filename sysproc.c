@@ -92,14 +92,14 @@ sys_uptime(void)
 }
 
 int
-sys_exitS(void)
+sys_exitStatus(void)
 {
 int status;
 
 if(argint(0, &status) < 0){
-    exitS(0);
+    exitStatus(0);
 }
-exitS(status);
+exitStatus(status);
 return 0;
 }
 

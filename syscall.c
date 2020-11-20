@@ -90,7 +90,7 @@ extern int sys_unlink(void);
 extern int sys_wait(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
-extern int sys_exitS(void);
+extern int sys_exitStatus(void);
 extern int sys_waitpid(void);
 extern int sys_setpriority(void);
 
@@ -116,7 +116,7 @@ static int (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
-[SYS_exitS]   sys_exitS,
+[SYS_exitStatus]   sys_exitStatus,
 [SYS_waitpid] sys_waitpid,
 [SYS_setpriority] sys_setpriority,
 };
