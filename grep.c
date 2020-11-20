@@ -1,5 +1,3 @@
-// Simple grep.  Only supports ^ . * $ operators.
-
 #include "types.h"
 #include "stat.h"
 #include "user.h"
@@ -43,33 +41,31 @@ main(int argc, char *argv[])
 
   if(argc <= 1){
     printf(2, "usage: grep pattern [file ...]\n");
-exitStatus(1);    
-exit();
+    exitS(1);
+    exit();
   }
   pattern = argv[1];
 
   if(argc <= 2){
     grep(pattern, 0);
-exitStatus(1);    
-exit();
+    exitS(1);
+    exit();
   }
 
   for(i = 2; i < argc; i++){
     if((fd = open(argv[i], 0)) < 0){
       printf(1, "grep: cannot open %s\n", argv[i]);
-exitStatus(1);     
- exit();
+      exitS(1);
+      exit();
     }
     grep(pattern, fd);
     close(fd);
   }
-exitStatus(1);  
-exit();
-return 0;
+  exitS(1);
+  exit();
 }
 
-// Regexp matcher from Kernighan & Pike,
-// The Practice of Programming, Chapter 9.
+
 
 int matchhere(char*, char*);
 int matchstar(int, char*, char*);
@@ -79,14 +75,13 @@ match(char *re, char *text)
 {
   if(re[0] == '^')
     return matchhere(re+1, text);
-  do{  // must look at empty string
+  do{  
     if(matchhere(re, text))
       return 1;
   }while(*text++ != '\0');
   return 0;
 }
 
-// matchhere: search for re at beginning of text
 int matchhere(char *re, char *text)
 {
   if(re[0] == '\0')
@@ -100,13 +95,11 @@ int matchhere(char *re, char *text)
   return 0;
 }
 
-// matchstar: search for c*re at beginning of text
 int matchstar(int c, char *re, char *text)
 {
-  do{  // a * matches zero or more instances
+  do{ 
     if(matchhere(re, text))
       return 1;
   }while(*text!='\0' && (*text++==c || c=='.'));
   return 0;
 }
-

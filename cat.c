@@ -12,14 +12,14 @@ cat(int fd)
   while((n = read(fd, buf, sizeof(buf))) > 0) {
     if (write(1, buf, n) != n) {
       printf(1, "cat: write error\n");
-      exitStatus(1);
-	exit();
+      exitS(1);
+      exit();
     }
   }
   if(n < 0){
     printf(1, "cat: read error\n");
-    exitStatus(1);
-	exit();
+    exitS(1);
+    exit();
   }
 }
 
@@ -30,20 +30,19 @@ main(int argc, char *argv[])
 
   if(argc <= 1){
     cat(0);
-	exitStatus(1);
+    exitS(1);
     exit();
   }
 
   for(i = 1; i < argc; i++){
     if((fd = open(argv[i], 0)) < 0){
       printf(1, "cat: cannot open %s\n", argv[i]);
-      exitStatus(1);
-	exit();
+      exitS(1);
+      exit();
     }
     cat(fd);
     close(fd);
   }
-	exitStatus(1);
+  exitS(1);
   exit();
-return 0;
 }

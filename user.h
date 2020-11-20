@@ -1,7 +1,6 @@
 struct stat;
 struct rtcdate;
 
-// system calls
 int fork(void);
 int exit(void) __attribute__((noreturn));
 int wait(int*);
@@ -23,10 +22,10 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-int exitStatus(int);
-int waitpid(int, int*, int);
+int exitS(int);
+int waitpid(int,int*,int);
 int setpriority(int);
-// ulib.c
+
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);
 void *memmove(void*, const void*, int);

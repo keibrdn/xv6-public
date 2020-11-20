@@ -14,15 +14,17 @@ sys_fork(void)
 }
 
 int
-sys_exit(void){
+sys_exit(void)
+{
   exit();
-  return 0;  // not reached
+  return 0;
 }
 
 int
 sys_wait(void)
-{ int *status;
-  argptr(0, (char **)&status, sizeof(int*));
+{
+  int *status;
+ argptr(0, (char **) &status, sizeof(int*));
   return wait(status);
 }
 
@@ -77,8 +79,7 @@ sys_sleep(void)
   return 0;
 }
 
-// return how many clock tick interrupts have occurred
-// since start.
+
 int
 sys_uptime(void)
 {
@@ -90,44 +91,46 @@ sys_uptime(void)
   return xticks;
 }
 
-int sys_exitStatus(void){
+int
+sys_exitS(void)
+{
 int status;
 
 if(argint(0, &status) < 0){
-  exitStatus(0);
+    exitS(0);
 }
-
-exitStatus(status);
+exitS(status);
 return 0;
-
-
-}
-int sys_waitpid(void) {
-	int pid, options;
-	int* status;
-
-
-	argint(0, &pid);
-	
-	argptr(1, (char**) &status, sizeof(int*));
-	
-	argint(2, &options);
-		
-	
-	return waitpid(pid, status, options);
 }
 
-int sys_setpriority(void) {
+int
+sys_waitpid(void)
+{
+ int pid, options;
+ int *status;
+
+argint(0, &pid);
+argptr(1, (char **) &status, sizeof(int*));
+argint(2, &options);
+
+
+ return waitpid(pid, status, options);
+   
+
+}
+
+int
+sys_setpriority(void) {
   int prior_lvl;
   int prev_priority;
 
-  prev_priority = myproc()->priority;  //set  previous priority to process priorty 
+  prev_priority = myproc()->priority;
   argint(0, &prior_lvl);
 
-  if(prior_lvl > 31 || prior_lvl < 0) { // check out of bounds
+  if(prior_lvl > 31 || prior_lvl < 0) {
    return -1;
  }
-     myproc()->priority = prior_lvl; // set new priority
- return prev_priority; 
+     myproc()->priority = prior_lvl; 
+ return prev_priority;
  }
 

@@ -1,5 +1,3 @@
-// init: The initial user-level program
-
 #include "types.h"
 #include "stat.h"
 #include "user.h"
@@ -10,30 +8,30 @@ char *argv[] = { "sh", 0 };
 int
 main(void)
 {
-  int pid, wpid;
+  int pid, wpid,status;
 
   if(open("console", O_RDWR) < 0){
     mknod("console", 1, 1);
     open("console", O_RDWR);
   }
-  dup(0);  // stdout
-  dup(0);  // stderr
+  dup(0);   
+  dup(0);   
 
   for(;;){
     printf(1, "init: starting sh\n");
     pid = fork();
     if(pid < 0){
       printf(1, "init: fork failed\n");
-exitStatus(1);    
-  exit();
+      exitS(1);
+      exit();
     }
     if(pid == 0){
       exec("sh", argv);
       printf(1, "init: exec sh failed\n");
-exitStatus(1);     
- exit();
+      exitS(1);
+      exit();
     }
-    while((wpid=wait(&pid)) >= 0 && wpid != pid)
+    while((wpid=wait(&status)) >= 0 && wpid != pid)
       printf(1, "zombie!\n");
   }
 }

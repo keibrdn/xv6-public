@@ -1,10 +1,9 @@
-// Shell.
+
 
 #include "types.h"
 #include "user.h"
 #include "fcntl.h"
 
-// Parsed command representation
 #define EXEC  1
 #define REDIR 2
 #define PIPE  3
@@ -49,11 +48,10 @@ struct backcmd {
   struct cmd *cmd;
 };
 
-int fork1(void);  // Fork but panics on failure.
+int fork1(void);
 void panic(char*);
 struct cmd *parsecmd(char*);
 
-// Execute cmd.  Never returns.
 void
 runcmd(struct cmd *cmd)
 {
@@ -63,10 +61,12 @@ runcmd(struct cmd *cmd)
   struct listcmd *lcmd;
   struct pipecmd *pcmd;
   struct redircmd *rcmd;
+  int status;
 
-  if(cmd == 0)
-exitStatus(1);   
- exit();
+  if(cmd == 0){
+    exitS(1);
+    exit();
+  }
 
   switch(cmd->type){
   default:
@@ -75,8 +75,7 @@ exitStatus(1);
   case EXEC:
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
-exitStatus(1);     
- exit();
+      exit();
     exec(ecmd->argv[0], ecmd->argv);
     printf(2, "exec %s failed\n", ecmd->argv[0]);
     break;
@@ -86,8 +85,8 @@ exitStatus(1);
     close(rcmd->fd);
     if(open(rcmd->file, rcmd->mode) < 0){
       printf(2, "open %s failed\n", rcmd->file);
-exitStatus(1);      
-exit();
+      exitS(1);
+      exit();
     }
     runcmd(rcmd->cmd);
     break;
@@ -96,7 +95,7 @@ exit();
     lcmd = (struct listcmd*)cmd;
     if(fork1() == 0)
       runcmd(lcmd->left);
-    wait(0);
+    wait(&status);
     runcmd(lcmd->right);
     break;
 
@@ -120,8 +119,8 @@ exit();
     }
     close(p[0]);
     close(p[1]);
-    wait(0);
-    wait(0);
+    wait(&status);
+    wait(&status);
     break;
 
   case BACK:
@@ -130,8 +129,8 @@ exit();
       runcmd(bcmd->cmd);
     break;
   }
-exitStatus(1); 
- exit();
+  exitS(1);
+  exit();
 }
 
 int
@@ -140,7 +139,7 @@ getcmd(char *buf, int nbuf)
   printf(2, "$ ");
   memset(buf, 0, nbuf);
   gets(buf, nbuf);
-  if(buf[0] == 0) // EOF
+  if(buf[0] == 0)
     return -1;
   return 0;
 }
@@ -150,8 +149,8 @@ main(void)
 {
   static char buf[100];
   int fd;
+  int status;
 
-  // Ensure that three file descriptors are open.
   while((fd = open("console", O_RDWR)) >= 0){
     if(fd >= 3){
       close(fd);
@@ -159,30 +158,29 @@ main(void)
     }
   }
 
-  // Read and run input commands.
+  
   while(getcmd(buf, sizeof(buf)) >= 0){
     if(buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' '){
-      // Chdir must be called by the parent, not the child.
-      buf[strlen(buf)-1] = 0;  // chop \n
+      
+      buf[strlen(buf)-1] = 0;
       if(chdir(buf+3) < 0)
         printf(2, "cannot cd %s\n", buf+3);
       continue;
     }
     if(fork1() == 0)
       runcmd(parsecmd(buf));
-    wait(0);
+    wait(&status);
   }
-exitStatus(1); 
- exit();
-return 0;
+  exitS(1);
+  exit();
 }
 
 void
 panic(char *s)
 {
   printf(2, "%s\n", s);
-exitStatus(1); 
- exit();
+  exitS(1);
+  exit();
 }
 
 int
@@ -196,8 +194,7 @@ fork1(void)
   return pid;
 }
 
-//PAGEBREAK!
-// Constructors
+
 
 struct cmd*
 execcmd(void)
@@ -263,8 +260,7 @@ backcmd(struct cmd *subcmd)
   cmd->cmd = subcmd;
   return (struct cmd*)cmd;
 }
-//PAGEBREAK!
-// Parsing
+
 
 char whitespace[] = " \t\r\n\v";
 char symbols[] = "<|>&;()";
@@ -395,7 +391,7 @@ parseredirs(struct cmd *cmd, char **ps, char *es)
     case '>':
       cmd = redircmd(cmd, q, eq, O_WRONLY|O_CREATE, 1);
       break;
-    case '+':  // >>
+    case '+':
       cmd = redircmd(cmd, q, eq, O_WRONLY|O_CREATE, 1);
       break;
     }
@@ -452,7 +448,7 @@ parseexec(char **ps, char *es)
   return ret;
 }
 
-// NUL-terminate all the counted strings.
+
 struct cmd*
 nulterminate(struct cmd *cmd)
 {
@@ -498,3 +494,4 @@ nulterminate(struct cmd *cmd)
   }
   return cmd;
 }
+
