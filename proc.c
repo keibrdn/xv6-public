@@ -587,10 +587,10 @@ struct proc *p;
   }
 }
 
-int prior( int setPriority) {
+int prior( int setPrior) {
   struct proc  *curproc = myproc();
   acquire(&ptable.lock);
-  curproc->priority_level = setPriority;
+  curproc->priority_level = setPrior;
   release(&ptable.lock);
   return 0;
 
