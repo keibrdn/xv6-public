@@ -303,9 +303,6 @@ scheduler(void)
     sti();
 
     acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
       
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
         if(p->state != RUNNABLE)
@@ -317,7 +314,6 @@ scheduler(void)
                temp = p->priority;
            }
        }
-   }
 
      for (p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if (p->state != RUNNABLE){
